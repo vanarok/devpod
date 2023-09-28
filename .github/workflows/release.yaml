@@ -118,6 +118,11 @@ jobs:
             os: linux
             arch: arm64
             cli_only: true
+          - host: ubuntu-22.04
+            target: aarch64-linux-android
+            os: android
+            arch: arm64
+            cli_only: true
     name: ${{ matrix.settings.target }}
     runs-on: ${{ matrix.settings.host }}
     env:
