@@ -17,7 +17,6 @@ import (
 	"github.com/loft-sh/devpod/cmd/use"
 	"github.com/loft-sh/devpod/pkg/client/clientimplementation"
 	"github.com/loft-sh/devpod/pkg/config"
-	"github.com/loft-sh/devpod/pkg/telemetry"
 	log2 "github.com/loft-sh/log"
 	"github.com/loft-sh/log/terminal"
 	"github.com/sirupsen/logrus"
@@ -37,7 +36,7 @@ func NewRootCmd() *cobra.Command {
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		PersistentPreRunE: func(cobraCmd *cobra.Command, args []string) error {
-			telemetry.Collector.SetCLIData(cobraCmd, globalFlags)
+
 
 			if globalFlags.LogOutput == "json" {
 				log2.Default.SetFormat(log2.JSONFormat)
@@ -78,7 +77,7 @@ func Execute() {
 		// recover from panic in order to log it via telemetry
 		if err := recover(); err != nil {
 			retErr := fmt.Errorf("panic: %v %s", err, debug.Stack())
-			telemetry.Collector.RecordEndEvent(retErr)
+			
 			log2.Default.Fatal(retErr)
 		}
 	}()
@@ -88,7 +87,7 @@ func Execute() {
 
 	// execute command
 	err := rootCmd.Execute()
-	telemetry.Collector.RecordEndEvent(err)
+	
 	if err != nil {
 		//nolint:all
 		if sshExitErr, ok := err.(*ssh.ExitError); ok {
@@ -106,8 +105,6 @@ func Execute() {
 			if rootCmd.Annotations == nil || rootCmd.Annotations[agent.AgentExecutedAnnotation] != "true" {
 				if terminal.IsTerminalIn {
 					log2.Default.Error("Try using the --debug flag to see a more verbose output")
-				} else if os.Getenv(telemetry.UIEnvVar) == "true" {
-					log2.Default.Error("Try enabling Debug mode under Settings to see a more verbose output")
 				}
 			}
 			log2.Default.Fatal(err)
