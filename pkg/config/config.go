@@ -7,9 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/ghodss/yaml"
-	"github.com/loft-sh/devpod/pkg/telemetry"
 	"github.com/loft-sh/devpod/pkg/types"
-	"github.com/loft-sh/devpod/pkg/version"
 	"github.com/pkg/errors"
 )
 
