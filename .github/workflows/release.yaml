@@ -165,12 +165,21 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.20.5
-
+      - name: Android setup
+        if: matrix.settings.os == 'android'
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r21e
+          add-to-path: true
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
       - name: Build Sidecar CLI
         if: matrix.settings.host != 'windows-latest'
         run: |
           BIN_NAME=devpod-cli-${{ matrix.settings.target }}
-          GOOS=${{ matrix.settings.os }} GOARCH=${{ matrix.settings.arch }} CGO_ENABLED=1 go build -ldflags "-s -w -X github.com/loft-sh/devpod/pkg/version.version="v${{ needs.create-release.outputs.original_package_version }}" -X github.com/loft-sh/devpod/pkg/telemetry.telemetryPrivateKey=${{ secrets.DEVPOD_TELEMETRY_PRIVATE_KEY }}" -o "test/$BIN_NAME"
+          echo $ANDROID_NDK_HOME
+          CC=${{ANDROID_NDK_HOME}}/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang GOOS=${{ matrix.settings.os }} GOARCH=${{ matrix.settings.arch }} CGO_ENABLED=1 go build -ldflags "-s -w -X github.com/loft-sh/devpod/pkg/version.version="v${{ needs.create-release.outputs.original_package_version }}" -X github.com/loft-sh/devpod/pkg/telemetry.telemetryPrivateKey=${{ secrets.DEVPOD_TELEMETRY_PRIVATE_KEY }}" -o "test/$BIN_NAME"
           cp "test/$BIN_NAME" "desktop/src-tauri/bin/$BIN_NAME"
           ls desktop/src-tauri/bin
 
