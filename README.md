@@ -1,3 +1,8 @@
+# support for android termux
+
+providers: 
+digital ocean: https://github.com/vanarok/devpod-provider-digitalocean
+
 <br>
 <a href="https://www.devpod.sh">
   <picture width="500">
